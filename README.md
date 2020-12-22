@@ -2,4 +2,4 @@
 
 ## Architecture
 
-![ARCHITECTURE](doc/img/architecture-eolo-planner.png)
+![ARCHITECTURE](doc/img/architecture-eolo-planner.jpg)
