@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  server-mysql:
+    image: mysql:8.0.22
+    expose: 
+      - 3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=eolo
+    ports:
+      - "3306:3306"
+    hostname: server-mysql
+    container_name: server-mysql
+    stdin_open: true
+    tty: true
+    networks:
+      - eolo
+  topo-mongodb:
+    image: mongo:4.4.2-bionic
+    expose: 
+      - 27017
+    ports:
+      - "27017:27017"
+    hostname: topo-mongodb
+    container_name: topo-mongodb
+    stdin_open: true
+    tty: true
+    networks:
+      - eolo
+  # pending to add rabbitmq container
+
+networks:
+  eolo:
+    driver: bridge 
