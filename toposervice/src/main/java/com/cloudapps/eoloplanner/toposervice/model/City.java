@@ -3,21 +3,19 @@ package com.cloudapps.eoloplanner.toposervice.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
+@Document(collection = "cities")
 public class City {
-
+	
 	@Id
     private String id;
-	
-    private String city;
-    private String landscape;
+	private String landscape;
     
     public City() {
     	
     }
     
-    public City(String city, String landscape) {
-    	this.city = city;
+    public City(String id, String landscape) {
+    	this.id = id;
     	this.landscape = landscape;
     }
 
@@ -29,14 +27,6 @@ public class City {
 		this.id = id;
 	}
 
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
 	public String getLandscape() {
 		return landscape;
 	}
@@ -44,5 +34,13 @@ public class City {
 	public void setLandscape(String landscape) {
 		this.landscape = landscape;
 	}
+	
+	@Override
+    public String toString() {
+        return "City {" +
+        	"id='" + id + "\', " +
+        	"landscape='" + landscape + "\'" +
+            "}";
+    }
 
 }

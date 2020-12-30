@@ -23,10 +23,12 @@ public class CityController {
 	CityService cities;
 	
 	@GetMapping("/{id}")
-	public Mono<City> getPost(@PathVariable String id) {
+	public Mono<City> getCity(@PathVariable String id) {
 
-		log.info("getPost method invoked");
-		return null;
+		log.info("getCity method invoked with id = {}", id);
+		
+		Mono<City> city = cities.findById(id);
+	    return city;
 	}
 
 }
