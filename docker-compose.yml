@@ -16,14 +16,14 @@ services:
     tty: true
     networks:
       - eolo
-  topo-mongodb:
+  toposervice-mongodb:
     image: mongo:4.4.2-bionic
     expose: 
       - 27017
     ports:
       - "27017:27017"
-    hostname: topo-mongodb
-    container_name: topo-mongodb
+    hostname: toposervice-mongodb
+    container_name: toposervice-mongodb
     stdin_open: true
     tty: true
     networks:
