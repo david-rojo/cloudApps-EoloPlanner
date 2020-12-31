@@ -1,7 +1,7 @@
 const grpc = require('grpc');
 const WeatherService = require('./interface');
 
-var client = new WeatherService('localhost:8081', grpc.credentials.createInsecure());
+var client = new WeatherService('localhost:9090', grpc.credentials.createInsecure());
 
 client.GetWeather({city: 'Madrid'}, (error, response) => {
 
