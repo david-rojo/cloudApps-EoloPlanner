@@ -28,7 +28,20 @@ services:
     tty: true
     networks:
       - eolo
-  # pending to add rabbitmq container
+  eolo-rabbitmq:
+    image: rabbitmq:3-management-alpine
+    expose: 
+      - 5672
+      - 15672
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    hostname: eolo-rabbitmq
+    container_name: eolo-rabbitmq
+    stdin_open: true
+    tty: true
+    networks:
+      - eolo
 
 networks:
   eolo:
