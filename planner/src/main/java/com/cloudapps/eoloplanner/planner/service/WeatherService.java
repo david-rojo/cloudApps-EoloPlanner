@@ -30,7 +30,6 @@ public class WeatherService {
         
         log.info("Executing weather request for city {}...", city);
         Weather response = this.client.getWeather(request);
-        log.info("Weather response received for city {} is {}", city, response.getWeather());
 
         return CompletableFuture.completedFuture(response.getWeather());
     }
