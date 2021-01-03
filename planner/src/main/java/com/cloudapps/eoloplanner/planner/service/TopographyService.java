@@ -21,11 +21,14 @@ public class TopographyService {
 	private Logger log = LoggerFactory.getLogger(TopographyService.class);
 	
 	@Async
-    public CompletableFuture<TopographyResponse> getLandscape(TopographyRequest request) {
-		log.info("Executing topography request for city {}...", request.getCity());
+    public CompletableFuture<TopographyResponse> getLandscape(String city) {
+		log.info("Executing topography request for city {}...", city);
+		TopographyRequest request = new TopographyRequest(city);
+		
         TopographyResponse response = new RestTemplate().getForObject(
         		getEndpointUrl(request),
         		TopographyResponse.class);
+        
         return CompletableFuture.completedFuture(response);
     }
 	

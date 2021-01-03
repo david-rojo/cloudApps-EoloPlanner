@@ -22,7 +22,7 @@ public class WeatherService {
 	private WeatherServiceBlockingStub client;
 	
 	@Async
-    public CompletableFuture<String> getWeather(String city) {
+    public CompletableFuture<Weather> getWeather(String city) {
 
         GetWeatherRequest request = GetWeatherRequest.newBuilder()
                 .setCity(city)
@@ -31,7 +31,7 @@ public class WeatherService {
         log.info("Executing weather request for city {}...", city);
         Weather response = this.client.getWeather(request);
 
-        return CompletableFuture.completedFuture(response.getWeather());
+        return CompletableFuture.completedFuture(response);
     }
 	
 }
