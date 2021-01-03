@@ -1,13 +1,20 @@
 package com.cloudapps.eoloplanner.planner.manager;
 
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cloudapps.eoloplanner.planner.broker.BrokerProducer;
 import com.cloudapps.eoloplanner.planner.dtos.EoloPlantCreationProgress;
 import com.cloudapps.eoloplanner.planner.dtos.EoloPlantCreationProgressBuilder;
+import com.cloudapps.eoloplanner.planner.dtos.TopographyResponse;
+import com.cloudapps.eoloplanner.planner.service.TopographyService;
+import com.cloudapps.eoloplanner.planner.service.WeatherService;
+import com.cloudapps.eoloplanner.weatherservice.WeatherServiceOuterClass.Weather;
 
 public class EoloPlantCreationManager {
 
@@ -27,6 +34,15 @@ public class EoloPlantCreationManager {
 	private final static int MIN_WAIT = 1;
 	private final static int MAX_WAIT = 3;
 	
+	@Autowired
+	TopographyService topographyService;
+	
+	@Autowired
+	WeatherService weatherService;
+	
+	@Autowired
+	BrokerProducer producer;
+	
 	private Logger log = LoggerFactory.getLogger(EoloPlantCreationManager.class);
 	
 	private Long id;
@@ -45,7 +61,31 @@ public class EoloPlantCreationManager {
 		this.setPlanning(city);
 	}
 	
-	public EoloPlantCreationProgress getCreationProgress() {
+	public void process() {
+		CompletableFuture<TopographyResponse> topography = topographyService
+				.getLandscape(city);
+        CompletableFuture<Weather> weather = weatherService
+        		.getWeather(city);
+        
+        this.requestsSentToServices();
+        producer.send(this.getCreationProgress());
+        
+        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(topography, weather);
+        
+        weather.thenRun(() -> {
+        	this.weatherResponseReceived(weather.join().getWeather());
+			producer.send(this.getCreationProgress());
+		});
+        
+        topography.thenRun(() -> {
+        	this.topographyResponseReceived(topography.join().getLandscape());
+			producer.send(this.getCreationProgress());
+		});
+        
+        combinedFuture.thenRun(() -> producer.send(this.getCreationProgress()));
+	}
+	
+	private EoloPlantCreationProgress getCreationProgress() {
 		
 		boolean completed = this.isCompleted();
 		String planning = this.getPlanningResult(completed);
@@ -99,19 +139,19 @@ public class EoloPlantCreationManager {
 		return completed;
 	}
 
-	public void requestsSentToServices() {
+	private void requestsSentToServices() {
 		this.setProgress(PROGRESS_REQUESTS_SENT);
 		log.info("Progress: {}% Requests sent to the services", this.getProgress());
 	}
 	
-	public void weatherResponseReceived(String weather) {
+	private void weatherResponseReceived(String weather) {
 		this.setProgress(this.getProgress() + 25);
 		this.setPlanning(this.getPlanning() + "-" + weather);
 		log.info("Progress: {}% Result received from weather service: {}", this.getProgress(), weather);
 		this.setWeather(true);
 	}
 	
-	public void topographyResponseReceived(String topography) {
+	private void topographyResponseReceived(String topography) {
 		this.setProgress(this.getProgress() + 25);
 		this.setPlanning(this.getPlanning() + "-" + topography);
 		log.info("Progress: {}% Result received from topography service: {}", this.getProgress(), topography);
