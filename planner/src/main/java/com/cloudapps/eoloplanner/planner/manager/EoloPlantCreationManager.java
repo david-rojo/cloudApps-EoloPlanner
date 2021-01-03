@@ -60,6 +60,7 @@ public class EoloPlantCreationManager {
 		
 		if (completed) {
 			int randomProcessTime = new Random().ints(MIN_WAIT, MAX_WAIT+1).findFirst().getAsInt();
+			log.info("Random process time for completed plant creation for id {} is {} second(s)", id, randomProcessTime);
 			try {
 				TimeUnit.SECONDS.sleep(randomProcessTime);
 			} catch (InterruptedException e) {
