@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 3000
 
+app.use(express.static('public'));
+
 const db = require("./app/database");
 
 // drop the table if it already exists
