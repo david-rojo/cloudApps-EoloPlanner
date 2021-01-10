@@ -1,9 +1,13 @@
+const broker = require("../app/broker");
 const db = require("../app/database");
-const Eoloplant = db.eoloplants;
+const repository = db.eoloplants;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new EoloPlant
 exports.create = (req, res) => {
+
+    console.log("start of create reached " + req.body);
+
     // Validate request
     if (!req.body.city) {
         res.status(400).send({
@@ -11,15 +15,16 @@ exports.create = (req, res) => {
         });
         return;
     }
-
+    console.log("city --> " + req.body.city);
     // Create a Eoloplant
     const eoloplant = {
         city: req.body.city,
     };
 
     // Save Eoloplant in the database
-    Eoloplant.create(eoloplant)
+    repository.create(eoloplant)
         .then(data => {
+            broker.publishToQueue(data);
             res.send(data);
         })
         .catch(err => {
@@ -33,7 +38,7 @@ exports.create = (req, res) => {
 exports.findOne = (req, res) => {
     const id = req.params.id;
 
-    Eoloplant.findByPk(id)
+    repository.findByPk(id)
         .then(data => {
             res.send(data);
         })
@@ -46,7 +51,7 @@ exports.findOne = (req, res) => {
 
 // Retrieve all EoloPlants from the database.
 exports.findAll = (req, res) => {
-    Eoloplant.findAll()
+    repository.findAll()
         .then(data => {
             res.send(data);
         })
@@ -57,11 +62,11 @@ exports.findAll = (req, res) => {
         });
 };
 
-// Update a Tutorial by the id in the request
+// Update a EoloPlant by the id in the request
 exports.update = (req, res) => {
     const id = req.params.id;
 
-    Eoloplant.update(req.body, {
+    repository.update(req.body, {
             where: {
                 id: id
             }
@@ -73,7 +78,7 @@ exports.update = (req, res) => {
                 });
             } else {
                 res.send({
-                    message: `Cannot update Tutorial with id=${id}. Maybe Eoloplant was not found or req.body is empty!`
+                    message: `Cannot update Eoloplant with id=${id}. Maybe Eoloplant was not found or req.body is empty!`
                 });
             }
         })
@@ -88,7 +93,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
     const id = req.params.id;
 
-    Eoloplant.destroy({
+    repository.destroy({
             where: {
                 id: id
             }
