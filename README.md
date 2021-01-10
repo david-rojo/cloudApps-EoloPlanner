@@ -36,3 +36,6 @@ $ node install.js
 $ node exec.js
 ```
 
+## Author
+
+[David Rojo(@david-rojo)](https://github.com/david-rojo)
